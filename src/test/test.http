@@ -1,6 +1,9 @@
 GET http://localhost:8080/get
 
 ###
+GET http://localhost:8080/hello
+
+###
 GET http://localhost:8080/routes
 
 ###

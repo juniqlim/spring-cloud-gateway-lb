@@ -2,7 +2,6 @@ package juniq.proxy2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -30,17 +29,19 @@ public class ApiPathRouteLocatorImpl implements RouteLocator {
     }
 
     private Buildable<Route> setPredicateSpec(ApiRoute apiRoute, PredicateSpec predicateSpec) {
-        BooleanSpec booleanSpec = predicateSpec.path("/**").and().weight("group1", apiRoute.weight);
+        BooleanSpec booleanSpec = predicateSpec.path("/**").and().weight(apiRoute.groupName, apiRoute.weight);
         return booleanSpec.uri(apiRoute.uri);
     }
 
     static class ApiRoute {
         private String uri;
         private int weight;
+        private String groupName;
 
-        ApiRoute(String uri, int weight) {
+        ApiRoute(String uri, int weight, String groupName) {
             this.uri = uri;
             this.weight = weight;
+            this.groupName = groupName;
         }
     }
 
@@ -48,8 +49,8 @@ public class ApiPathRouteLocatorImpl implements RouteLocator {
         private static final List<ApiRoute> list = new ArrayList();
 
         static {
-            list.add(new ApiRoute("https://www.naver.com", 8));
-            list.add(new ApiRoute("https://www.daum.net", 2));
+            list.add(new ApiRoute("http://localhost:8070", 8, "group1"));
+            list.add(new ApiRoute("http://localhost:8090", 2, "group1"));
         }
 
         public Repository() {
@@ -65,9 +66,9 @@ public class ApiPathRouteLocatorImpl implements RouteLocator {
 
         public void add() {
             list.clear();
-            list.add(new ApiRoute("http://httpbin.org", 1));
-            list.add(new ApiRoute("https://www.naver.com", 5));
-            list.add(new ApiRoute("http://daplus.net", 4));
+            list.add(new ApiRoute("http://localhost:8070", 1, "group2"));
+            list.add(new ApiRoute("http://localhost:8090", 5, "group2"));
+            list.add(new ApiRoute("http://localhost:8060", 4, "group2"));
         }
     }
 }
